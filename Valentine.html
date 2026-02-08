@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A Formal Inquiry</title>
     <style>
+        :root {
+            --primary: #8e2148;
+            --bg: #fff5f5;
+        }
+
         body {
             display: flex;
             flex-direction: column;
@@ -12,44 +17,71 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            background: radial-gradient(circle, #fff5f5 0%, #ffe4e1 100%);
+            background: radial-gradient(circle, #ffffff 0%, var(--bg) 100%);
             font-family: 'Georgia', serif;
             overflow: hidden;
             text-align: center;
+            color: var(--primary);
         }
 
-        .container { padding: 20px; z-index: 1; width: 100%; max-width: 500px; }
+        .container { 
+            padding: 30px; 
+            z-index: 1; 
+            width: 100%; 
+            max-width: 600px;
+        }
         
-        h1 { color: #8e2148; min-height: 120px; font-size: 1.6rem; line-height: 1.4; font-style: italic; }
-
-        .gif-container { height: 230px; margin-bottom: 20px; }
-        img { max-height: 100%; border-radius: 20px; border: 4px solid white; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        h1 { 
+            font-weight: 400;
+            min-height: 150px; 
+            font-size: 1.8rem; 
+            line-height: 1.5; 
+            font-style: italic;
+            transition: all 0.5s ease;
+        }
 
         .buttons {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
             align-items: center;
-            min-height: 280px;
+            min-height: 300px;
             position: relative;
         }
 
         button {
-            padding: 15px 30px;
-            font-size: 1rem;
+            padding: 18px 35px;
+            font-size: 0.9rem;
             cursor: pointer;
-            border: 1px solid #d0205e;
-            border-radius: 5px;
+            border: 1px solid var(--primary);
+            border-radius: 2px; /* Sharp, modern look */
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             width: 280px;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             text-transform: uppercase;
+            background: transparent;
+            color: var(--primary);
         }
 
-        #yesBtn { background-color: #8e2148; color: white; z-index: 1000; }
-        #altBtn { background-color: transparent; color: #8e2148; }
-        
-        .hidden { display: none; }
+        #yesBtn { 
+            background-color: var(--primary); 
+            color: white; 
+            z-index: 1000;
+            font-weight: bold;
+        }
+
+        /* Subtle shake animation for the 'No' path */
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
     </style>
 </head>
 <body>
@@ -59,9 +91,6 @@
     </audio>
 
     <div class="container">
-        <div class="gif-container">
-            <img id="mainGif" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/qUIm5wu6LAAog/giphy.gif">
-        </div>
         <h1 id="questionText">Would you do me the immense honor of being my Valentine, or must I resort to dramatic measures?</h1>
         
         <div class="buttons" id="buttonContainer">
@@ -74,71 +103,41 @@
         let currentStep = 0;
         let yesScale = 1;
         const audio = document.getElementById('romanticTune');
+        const textElement = document.getElementById('questionText');
 
         const scenarios = [
-            { 
-                text: "A bold choice. My ego is bruised, but my resolve is strengthened. Reconsider?", 
-                gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/VAGmG5H02w38PshN3q/giphy.gif", 
-                btn: "Still leaning toward drama" 
-            },
-            { 
-                text: "I see. You enjoy the chase. Is this a pride and prejudice situation, or are you truly this heartless?", 
-                gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/X38toW1qyEuzf26BWu/giphy.gif", 
-                btn: "A bit of both" 
-            },
-            { 
-                text: "Statistically speaking, saying 'Yes' now would save us both 4 minutes of scrolling. Efficiency is romantic, right?", 
-                gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/pUf6LIDf4uC2D2O8K7/giphy.gif", 
-                btn: "I prefer chaos" 
-            },
-            { 
-                text: "I've already drafted a sonnet about your stubbornness. Don't make me publish it.", 
-                gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/l378giAZgxPw3QO52/giphy.gif", 
-                btn: "Read it to me" 
-            },
-            { 
-                text: "At this point, my internal monologue is just a sad violin solo. Are you entertained?", 
-                gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/Hh8OgIqn4Y93y/giphy.gif", 
-                btn: "Thoroughly" 
-            },
-            { 
-                text: "If you say yes, I promise to pretend I didn't have to ask 7 times. I'll take the secret to my grave.", 
-                gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/S5n7WKHVx5QsM/giphy.gif", 
-                btn: "Tempting, but no" 
-            },
-            { 
-                text: "My patience is as thin as my excuses to keep this going. Just say yes, you magnificent headache.", 
-                gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/3o7TKVUn7iM8FMEU24/giphy.gif", 
-                btn: "Make me" 
-            },
-            { 
-                text: "Fine. I am deploying the ultimate 'Puppy Eyes 2.0'. If this fails, I'm calling my lawyer.", 
-                gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/u23zXEvNsI9M82IBFW/giphy.gif", 
-                btn: "Consulting legal counsel" 
-            },
-            { 
-                text: "The 'No' button is currently filing for divorce. It doesn't want to be part of this rejection anymore.", 
-                gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/6uGhT1O4sxpi8/giphy.gif", 
-                btn: "Poor button" 
-            }
+            { text: "A bold choice. My ego is bruised, but my resolve is strengthened. Reconsider?", btn: "Still leaning toward drama" },
+            { text: "I see. You enjoy the chase. Is this a 'Pride & Prejudice' situation, or are you truly this heartless?", btn: "A bit of both" },
+            { text: "Statistically speaking, saying 'Yes' now would save us both 4 minutes of scrolling. Efficiency is romantic.", btn: "I prefer chaos" },
+            { text: "I've already drafted a sonnet about your stubbornness. Don't make me publish it.", btn: "Read it to me" },
+            { text: "At this point, my internal monologue is just a sad violin solo. Are you entertained?", btn: "Thoroughly" },
+            { text: "If you say yes, I promise to pretend I didn't have to ask 7 times. I'll take that secret to my grave.", btn: "Tempting, but no" },
+            { text: "My patience is as thin as my excuses to keep this going. Just say yes, you magnificent headache.", btn: "Make me" },
+            { text: "Fine. I am deploying the ultimate silent treatment. (It's not working, is it?)", btn: "Not even a little" },
+            { text: "The 'No' button is currently filing for legal separation. It doesn't want to be part of this rejection.", btn: "Poor button" },
+            { text: "Last chance before I start using very long words to confuse you into agreement.", btn: "Try me" }
         ];
 
         function nextQuestion() {
-            // Start audio on first interaction
             if(audio.paused) audio.play();
 
             if (currentStep < scenarios.length) {
                 const stage = scenarios[currentStep];
-                document.getElementById('questionText').innerText = stage.text;
-                document.getElementById('mainGif').src = stage.gif;
+                
+                // Add shake effect to text
+                textElement.classList.remove('shake');
+                void textElement.offsetWidth; // trigger reflow
+                textElement.classList.add('shake');
+
+                textElement.innerText = stage.text;
                 document.getElementById('altBtn').innerText = stage.btn;
                 
-                yesScale += 0.5;
+                yesScale += 0.4;
                 document.getElementById('yesBtn').style.transform = `scale(${yesScale})`;
                 
                 currentStep++;
             } else {
-                document.getElementById('questionText').innerText = "Absolute audacity. Now I shall make your choice inevitable.";
+                textElement.innerText = "Absolute audacity. Now I shall make your choice inevitable.";
                 moveNo();
             }
         }
@@ -155,10 +154,10 @@
         }
 
         function celebrate() {
-            document.getElementById('mainGif').src = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZzlqZ3R4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/lz4v8Vp8B1mX6/giphy.gif";
-            document.getElementById('questionText').innerText = "A wise decision. I shall cancel the dramatic poetry reading at once. ❤️";
+            textElement.innerText = "A wise decision. I shall cancel the dramatic poetry reading at once. ❤️";
             document.getElementById('buttonContainer').innerHTML = "";
-            document.body.style.background = "radial-gradient(circle, #ffdee9 0%, #b5fffc 100%)";
+            document.body.style.background = "#8e2148";
+            textElement.style.color = "white";
         }
     </script>
 </body>
