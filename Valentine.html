@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Be My Valentine?</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #ffe4e1;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        #container {
+            text-align: center;
+            z-index: 1;
+        }
+
+        h1 {
+            color: #d0205e;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .gif-container {
+            height: 250px;
+            margin-bottom: 20px;
+        }
+
+        img {
+            max-height: 100%;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        #yesBtn {
+            background-color: #4caf50;
+            color: white;
+            z-index: 1000; /* Keeps it above the jumping button */
+        }
+
+        #noBtn {
+            background-color: #f44336;
+            color: white;
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="container">
+        <div class="gif-container">
+            <img id="displayGif" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/qUIm5wu6LAAog/giphy.gif" alt="Puppy Eyes">
+        </div>
+        <h1 id="questionText">Will you be my Valentine? ❤️</h1>
+        
+        <div class="buttons">
+            <button id="yesBtn" onclick="celebrate()">Yes</button>
+            <button id="noBtn" onmouseover="moveButton()" onclick="moveButton()">No</button>
+        </div>
+    </div>
+
+    <script>
+        let yesSize = 1;
+        let noClicks = 0;
+
+        function moveButton() {
+            const noBtn = document.getElementById('noBtn');
+            const yesBtn = document.getElementById('yesBtn');
+            
+            // 1. Move the No button
+            const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+            noBtn.style.left = `${x}px`;
+            noBtn.style.top = `${y}px`;
+
+            // 2. Make the Yes button bigger
+            yesSize += 0.4; // Increase scale by 40% each time
+            yesBtn.style.transform = `scale(${yesSize})`;
+            
+            // 3. Optional: Move the container up slightly if the Yes button gets huge
+            noClicks++;
+            if(noClicks > 5) {
+                document.getElementById('questionText').innerText = "Just say yes already! 😤";
+            }
+        }
+
+        function celebrate() {
+            const gif = document.getElementById('displayGif');
+            const text = document.getElementById('questionText');
+            const buttons = document.querySelector('.buttons');
+            const container = document.getElementById('container');
+
+            // Change the content
+            gif.src = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZzlqZ3R4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/lz4v8Vp8B1mX6/giphy.gif"; 
+            text.innerHTML = "I KNEW YOU'D SAY YES! 🥰❤️";
+            
+            // Hide everything else
+            buttons.style.display = 'none';
+            document.body.style.backgroundColor = "#ffc0cb";
+        }
+    </script>
+</body>
+</html>
