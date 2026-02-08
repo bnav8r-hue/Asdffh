@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>I Have a Question...</title>
+    <title>A Formal Inquiry</title>
     <style>
         body {
             display: flex;
@@ -12,90 +12,133 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            background-color: #ffe4e1;
-            font-family: 'Arial', sans-serif;
+            background: radial-gradient(circle, #fff5f5 0%, #ffe4e1 100%);
+            font-family: 'Georgia', serif;
             overflow: hidden;
             text-align: center;
         }
 
-        .container { padding: 20px; z-index: 1; width: 100%; }
+        .container { padding: 20px; z-index: 1; width: 100%; max-width: 500px; }
         
-        h1 { color: #d0205e; min-height: 100px; font-size: 1.8rem; padding: 0 10px; }
+        h1 { color: #8e2148; min-height: 120px; font-size: 1.6rem; line-height: 1.4; font-style: italic; }
 
-        .gif-container { height: 220px; margin-bottom: 20px; }
-        img { max-height: 100%; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .gif-container { height: 230px; margin-bottom: 20px; }
+        img { max-height: 100%; border-radius: 20px; border: 4px solid white; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
 
         .buttons {
             display: flex;
             flex-direction: column;
             gap: 15px;
             align-items: center;
-            min-height: 300px;
+            min-height: 280px;
             position: relative;
         }
 
         button {
-            padding: 15px 25px;
-            font-size: 1.1rem;
+            padding: 15px 30px;
+            font-size: 1rem;
             cursor: pointer;
-            border: none;
-            border-radius: 50px;
-            transition: all 0.2s ease;
+            border: 1px solid #d0205e;
+            border-radius: 5px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             width: 280px;
-            max-width: 90%;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
-        #yesBtn { background-color: #4caf50; color: white; z-index: 999; }
-        #altBtn { background-color: #f44336; color: white; }
+        #yesBtn { background-color: #8e2148; color: white; z-index: 1000; }
+        #altBtn { background-color: transparent; color: #8e2148; }
         
         .hidden { display: none; }
     </style>
 </head>
 <body>
 
+    <audio id="romanticTune" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
     <div class="container">
         <div class="gif-container">
             <img id="mainGif" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/qUIm5wu6LAAog/giphy.gif">
         </div>
-        <h1 id="questionText">Will you be my Valentine? ❤️</h1>
+        <h1 id="questionText">Would you do me the immense honor of being my Valentine, or must I resort to dramatic measures?</h1>
         
         <div class="buttons" id="buttonContainer">
-            <button id="yesBtn" onclick="celebrate()">Yes, of course!</button>
-            <button id="altBtn" onclick="nextQuestion()" onmouseover="moveNo()">Wait, what?</button>
+            <button id="yesBtn" onclick="celebrate()">I accept</button>
+            <button id="altBtn" onclick="nextQuestion()" onmouseover="moveNo()">The dramatic measures, please</button>
         </div>
     </div>
 
     <script>
         let currentStep = 0;
         let yesScale = 1;
+        const audio = document.getElementById('romanticTune');
 
         const scenarios = [
-            { text: "Are you sure? I'll buy you snacks...", gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/c76IJbxTcAR5C/giphy.gif", btn: "Show me the snacks" },
-            { text: "What if I say please? Please please please?", gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/8vQSQ3cNXuDGo/giphy.gif", btn: "Still unsure..." },
-            { text: "Okay, look at this puppy. You can't say no to him.", gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/10H4by255D2UsU/giphy.gif", btn: "He's cute, but..." },
-            { text: "I'll be very, very, very sad...", gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/OPU6wUKDX4jky67WZn/giphy.gif", btn: "Don't cry!" },
-            { text: "What if we get your favorite food?", gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/nuRXXyy025agM/giphy.gif", btn: "Now you're talking" },
-            { text: "I'll do the dishes for a whole week!", gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/l378bu6ye7Re9N9GU/giphy.gif", btn: "A whole week??" },
-            { text: "Think of the aesthetic photos we'll take!", gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/S9oNGC1E42SBRDWXWo/giphy.gif", btn: "Maybe..." },
-            { text: "I am literally begging on my knees now.", gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/26AHPXYUXhZY6NInm/giphy.gif", btn: "One more reason?" },
-            { text: "If you say yes, I'll be the happiest person alive!", gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/3oz8xAFtqoNEAfRXWw/giphy.gif", btn: "Okay, fine..." },
-            { text: "LAST CHANCE! The 'No' button is retiring.", gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/YqnXsmYpEq3DNo23F9/giphy.gif", btn: "Uh oh..." }
+            { 
+                text: "A bold choice. My ego is bruised, but my resolve is strengthened. Reconsider?", 
+                gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/VAGmG5H02w38PshN3q/giphy.gif", 
+                btn: "Still leaning toward drama" 
+            },
+            { 
+                text: "I see. You enjoy the chase. Is this a pride and prejudice situation, or are you truly this heartless?", 
+                gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/X38toW1qyEuzf26BWu/giphy.gif", 
+                btn: "A bit of both" 
+            },
+            { 
+                text: "Statistically speaking, saying 'Yes' now would save us both 4 minutes of scrolling. Efficiency is romantic, right?", 
+                gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/pUf6LIDf4uC2D2O8K7/giphy.gif", 
+                btn: "I prefer chaos" 
+            },
+            { 
+                text: "I've already drafted a sonnet about your stubbornness. Don't make me publish it.", 
+                gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/l378giAZgxPw3QO52/giphy.gif", 
+                btn: "Read it to me" 
+            },
+            { 
+                text: "At this point, my internal monologue is just a sad violin solo. Are you entertained?", 
+                gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/Hh8OgIqn4Y93y/giphy.gif", 
+                btn: "Thoroughly" 
+            },
+            { 
+                text: "If you say yes, I promise to pretend I didn't have to ask 7 times. I'll take the secret to my grave.", 
+                gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/S5n7WKHVx5QsM/giphy.gif", 
+                btn: "Tempting, but no" 
+            },
+            { 
+                text: "My patience is as thin as my excuses to keep this going. Just say yes, you magnificent headache.", 
+                gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/3o7TKVUn7iM8FMEU24/giphy.gif", 
+                btn: "Make me" 
+            },
+            { 
+                text: "Fine. I am deploying the ultimate 'Puppy Eyes 2.0'. If this fails, I'm calling my lawyer.", 
+                gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/u23zXEvNsI9M82IBFW/giphy.gif", 
+                btn: "Consulting legal counsel" 
+            },
+            { 
+                text: "The 'No' button is currently filing for divorce. It doesn't want to be part of this rejection anymore.", 
+                gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueW52ZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxJnB0PW0mY3Q9Zw/6uGhT1O4sxpi8/giphy.gif", 
+                btn: "Poor button" 
+            }
         ];
 
         function nextQuestion() {
+            // Start audio on first interaction
+            if(audio.paused) audio.play();
+
             if (currentStep < scenarios.length) {
                 const stage = scenarios[currentStep];
                 document.getElementById('questionText').innerText = stage.text;
                 document.getElementById('mainGif').src = stage.gif;
                 document.getElementById('altBtn').innerText = stage.btn;
                 
-                // Increase size of Yes button
-                yesScale += 0.4;
+                yesScale += 0.5;
                 document.getElementById('yesBtn').style.transform = `scale(${yesScale})`;
                 
                 currentStep++;
             } else {
-                // After 10 questions, make it jump!
+                document.getElementById('questionText').innerText = "Absolute audacity. Now I shall make your choice inevitable.";
                 moveNo();
             }
         }
@@ -113,9 +156,9 @@
 
         function celebrate() {
             document.getElementById('mainGif').src = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZzlqZ3R4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4eHpxZzR4ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/lz4v8Vp8B1mX6/giphy.gif";
-            document.getElementById('questionText').innerText = "KNEW IT! See you on the 14th! 🥰❤️";
-            document.getElementById('buttonContainer').innerHTML = ""; // Clear buttons
-            document.body.style.backgroundColor = "#ffc0cb";
+            document.getElementById('questionText').innerText = "A wise decision. I shall cancel the dramatic poetry reading at once. ❤️";
+            document.getElementById('buttonContainer').innerHTML = "";
+            document.body.style.background = "radial-gradient(circle, #ffdee9 0%, #b5fffc 100%)";
         }
     </script>
 </body>
